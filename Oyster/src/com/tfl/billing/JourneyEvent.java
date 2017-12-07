@@ -8,10 +8,10 @@ public abstract class JourneyEvent {
     private final UUID readerId;
     private final long time;
 
-    public JourneyEvent(UUID cardId, UUID readerId, ClockInterface clock) {
+    public JourneyEvent(UUID cardId, UUID readerId, ClockInterface time) {
         this.cardId = cardId;
         this.readerId = readerId;
-        this.time = clock.currentTime();
+        this.time = time.currentTime();
     }
 
     public UUID cardId() {

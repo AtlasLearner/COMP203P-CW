@@ -17,10 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.TestCase.assertFalse;
-
 import static org.hamcrest.CoreMatchers.not;
 
-public class TravelTrackerTest {
+public class PaymentsManagerTest {
 
     private PaymentsSystemInterface paymentsSystemInterface;
     private CustomerDatabaseInterface customerDatabaseInterface;
@@ -68,7 +67,6 @@ public class TravelTrackerTest {
 
     @Test
     public void customerOffPeakJourney(){
-
         PaymentsManager paymentsManager = new PaymentsManager(tracker, paymentsSystemInterface);
         clock.setTime(12,0);
         JourneyStart start = new JourneyStart(myCard1.id(), victoriaReader.id(), clock);
@@ -78,17 +76,19 @@ public class TravelTrackerTest {
         assertFalse(paymentsManager.peak(journey));
     }
 
-    @Test
+    /*@Test
     public void customerPeakJourney(){
 
     }
 
-    @Test void customerLongJourney() {
+    @Test
+    public void customerLongJourney() {
 
     }
 
-    @Test void customerShortJourney() {
+    @Test
+    public void customerShortJourney() {
 
-    }
+    }*/
 
 }

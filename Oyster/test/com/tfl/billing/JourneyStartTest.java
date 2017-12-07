@@ -22,7 +22,7 @@ public class JourneyStartTest {
     public void CheckreaderID() {
         assertEquals(start.readerId(), readerID);
     }
-
+    
     @Test
-    public void Checkclock() { assertEquals(start.time(), time.currentTime()); }
+    public void Checktime() { assertEquals(start.time(), time.currentTime());}
 }
