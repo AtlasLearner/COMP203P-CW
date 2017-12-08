@@ -25,6 +25,8 @@ public class PaymentsManagerTest {
 
     private PaymentsSystemInterface paymentsSystemInterface;
     private CustomerDatabaseInterface customerDatabaseInterface;
+    private PeakCheckerInterface peakCheckerInterface = new PeakChecker();
+    private DurationCheckerInterface durationCheckerInterface = new DurationChecker();
     private TravelTracker tracker;
 
     private List<Customer> customers;
@@ -102,7 +104,7 @@ public class PaymentsManagerTest {
 
         Journey journey = new Journey(start, end);
 
-        assertFalse(paymentsManager.peak(journey));
+        assertFalse(peakCheckerInterface.isPeak(journey));
     }
 
     @Test
@@ -116,7 +118,7 @@ public class PaymentsManagerTest {
         JourneyEnd end = new JourneyEnd(SL_Card.id(), paddingtonReader.id(), clock);
 
         Journey journey = new Journey(start, end);
-        assertTrue(paymentsManager.peak(journey));
+        assertTrue(peakCheckerInterface.isPeak(journey));
     }
 
     @Test
@@ -130,7 +132,7 @@ public class PaymentsManagerTest {
         JourneyEnd end = new JourneyEnd(SL_Card.id(), paddingtonReader.id(), clock);
 
         Journey journey = new Journey(start, end);
-        assertTrue(paymentsManager.longJourney(journey));
+        assertTrue(durationCheckerInterface.isLongJourney(journey));
     }
 
     @Test
@@ -144,7 +146,7 @@ public class PaymentsManagerTest {
         JourneyEnd end = new JourneyEnd(SL_Card.id(), paddingtonReader.id(), clock);
 
         Journey journey = new Journey(start, end);
-        assertFalse(paymentsManager.longJourney(journey));
+        assertFalse(durationCheckerInterface.isLongJourney(journey));
     }
 
     @Test

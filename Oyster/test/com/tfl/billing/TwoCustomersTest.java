@@ -70,7 +70,7 @@ public class TwoCustomersTest {
     }
 
     @Test
-    public void twoCustomersOnePeakShortJourneysTest() {
+    public void twoCustomersTest() {
         customers.add(seanLee);
         customers.add(kennethLay);
 

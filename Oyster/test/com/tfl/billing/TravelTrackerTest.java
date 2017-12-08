@@ -8,6 +8,7 @@ import com.tfl.underground.OysterReaderLocator;
 import com.tfl.underground.Station;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,70 +23,89 @@ public class TravelTrackerTest {
     private CustomerDatabaseInterface customerDatabaseInterface;
     private TravelTracker tracker;
 
-    private final OysterCardReader paddingtonReader = OysterReaderLocator.atStation(Station.PADDINGTON);
-    private final OysterCardReader victoriaReader = OysterReaderLocator.atStation(Station.VICTORIA_STATION);
-    private final OysterCardReader kingsCrossReader = OysterReaderLocator.atStation(Station.KINGS_CROSS);
+    private List<Customer> customers;
+    private AdjustableClock clock;
 
-    final OysterCard myCard1 = new OysterCard("42694269-8cf0-11bd-b23e-10b96e4ef00d");
-    final OysterCard myCard2 = new OysterCard("12341234-8cf0-11bd-b23e-10b96e4ef00d");
+    private final OysterCard SL_Card = new OysterCard("42694269-8cf0-11bd-b23e-10b96e4ef00d");
+    private final Customer seanLee = new Customer("Sean Lee", SL_Card);
 
-    private Customer sean = new Customer("Sean Lee", myCard1);
-    private Customer kenneth = new Customer("Kenneth Forbes Lay", myCard2);
+    private final OysterCard KFL_Card = new OysterCard("12341234-8cf0-11bd-b23e-10b96e4ef00d");
+    private final Customer kennethLay = new Customer("Kenneth Forbes Lay", KFL_Card);
 
-    private List<Customer> customers = new ArrayList<Customer>(){
-        {
-            this.add(sean);
-            this.add(kenneth);
-        }
-    };
+    private final OysterCard RM_Card = new OysterCard("12451451-8cf0-11bd-b23e-10b96e4ef00d");
+    private final Customer ryoMochi = new Customer("Ryo Mochizuki", RM_Card);
+
+    private OysterCardReader paddingtonReader;
+    private OysterCardReader victoriaReader;
+    private OysterCardReader kingsCrossReader;
 
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
-    AdjustableClock clock = new AdjustableClock();
 
     @Before
     public void beforeAll() {
         customerDatabaseInterface = context.mock(CustomerDatabaseInterface.class);
         paymentsSystemInterface = context.mock(PaymentsSystemInterface.class);
+        clock = new AdjustableClock();
+
+        paddingtonReader = OysterReaderLocator.atStation(Station.PADDINGTON);
+        victoriaReader = OysterReaderLocator.atStation(Station.VICTORIA_STATION);
+        kingsCrossReader = OysterReaderLocator.atStation(Station.KINGS_CROSS);
+
         tracker = new TravelTracker(customerDatabaseInterface, clock);
+        customers = new ArrayList<>();
+    }
+
+    @After
+    public void endOfTest() {
+        customerDatabaseInterface = null;
+        paymentsSystemInterface = null;
+        clock = null;
+
+        paddingtonReader = null;
+        victoriaReader = null;
+        kingsCrossReader = null;
+
+        tracker = null;
+        customers = null;
     }
 
     @Test
     public void cardScanTest(){
         context.checking(new Expectations(){{
-            exactly(1).of(customerDatabaseInterface).isRegisteredId(myCard1.id());
+            exactly(1).of(customerDatabaseInterface).isRegisteredId(SL_Card.id());
             will(returnValue(true));
         }});
-        tracker.cardScanned(myCard1.id(), paddingtonReader.id());
+        tracker.cardScanned(SL_Card.id(), paddingtonReader.id());
     }
 
     @Test
     public void getCustomerJourneysTest(){
         context.checking(new Expectations(){{
-            exactly(1).of(customerDatabaseInterface).isRegisteredId(myCard2.id());
+            exactly(1).of(customerDatabaseInterface).isRegisteredId(KFL_Card.id());
             will(returnValue(true));
-            exactly(1).of(customerDatabaseInterface).isRegisteredId(myCard1.id());
+            exactly(1).of(customerDatabaseInterface).isRegisteredId(SL_Card.id());
             will(returnValue(true));
         }});
         tracker.connect(paddingtonReader, victoriaReader, kingsCrossReader);
-        paddingtonReader.touch(myCard2);
-        victoriaReader.touch(myCard2);
+        paddingtonReader.touch(KFL_Card);
+        victoriaReader.touch(KFL_Card);
 
         JourneyEvent start = tracker.getEventLog().get(0);
         JourneyEvent end = tracker.getEventLog().get(1);
         Journey journeyTest = new Journey(start, end);
 
-        assertEquals(tracker.getCustomerJourneys(kenneth).get(0).originId(),journeyTest.originId());
-        assertEquals(tracker.getCustomerJourneys(kenneth).get(0).destinationId(),journeyTest.destinationId());
+        assertEquals(tracker.getCustomerJourneys(kennethLay).get(0).originId(),journeyTest.originId());
+        assertEquals(tracker.getCustomerJourneys(kennethLay).get(0).destinationId(),journeyTest.destinationId());
 
-        paddingtonReader.touch(myCard1);
-        kingsCrossReader.touch(myCard1);
+        paddingtonReader.touch(SL_Card);
+        kingsCrossReader.touch(SL_Card);
 
         Journey journeyTest2 = new Journey(start, end);
 
-        assertEquals(tracker.getCustomerJourneys(sean).get(0).originId() , journeyTest2.originId());
-        assertEquals(tracker.getCustomerJourneys(sean).get(0).startTime(), journeyTest2.startTime());
-        assertEquals(tracker.getCustomerJourneys(sean).get(0).endTime(), journeyTest2.endTime());
+        assertEquals(tracker.getCustomerJourneys(seanLee).get(0).originId() , journeyTest2.originId());
+        assertEquals(tracker.getCustomerJourneys(seanLee).get(0).startTime(), journeyTest2.startTime());
+        assertEquals(tracker.getCustomerJourneys(seanLee).get(0).endTime(), journeyTest2.endTime());
     }
 
 }
