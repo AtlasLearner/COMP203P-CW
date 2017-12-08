@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 
 public class PaymentsManagerTest {
@@ -24,6 +25,7 @@ public class PaymentsManagerTest {
     private PaymentsSystemInterface paymentsSystemInterface;
     private CustomerDatabaseInterface customerDatabaseInterface;
     private TravelTracker tracker;
+    private AdjustableClock clock = new AdjustableClock();
 
     private final OysterCardReader paddingtonReader = OysterReaderLocator.atStation(Station.PADDINGTON);
     private final OysterCardReader victoriaReader = OysterReaderLocator.atStation(Station.VICTORIA_STATION);
@@ -43,7 +45,6 @@ public class PaymentsManagerTest {
 
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
-    AdjustableClock clock = new AdjustableClock();
 
     @Before
     public void beforeAll() {
@@ -64,7 +65,6 @@ public class PaymentsManagerTest {
         }});
         paymentsManager.chargeAccounts();
     }
-
     @Test
     public void customerOffPeakJourney(){
         PaymentsManager paymentsManager = new PaymentsManager(tracker, paymentsSystemInterface);
@@ -76,19 +76,37 @@ public class PaymentsManagerTest {
         assertFalse(paymentsManager.peak(journey));
     }
 
-    /*@Test
+    @Test
     public void customerPeakJourney(){
-
+        PaymentsManager paymentsManager = new PaymentsManager(tracker, paymentsSystemInterface);
+        clock.setTime(17, 01);
+        JourneyStart start = new JourneyStart(myCard1.id(), victoriaReader.id(), clock);
+        clock.setTime(18, 01);
+        JourneyEnd end = new JourneyEnd(myCard1.id(), paddingtonReader.id(), clock);
+        Journey journey = new Journey(start, end);
+        assertTrue(paymentsManager.peak(journey));
     }
 
     @Test
     public void customerLongJourney() {
-
+        PaymentsManager paymentsManager = new PaymentsManager(tracker, paymentsSystemInterface);
+        clock.setTime(17, 01);
+        JourneyStart start = new JourneyStart(myCard1.id(), victoriaReader.id(), clock);
+        clock.setTime(17, 30);
+        JourneyEnd end = new JourneyEnd(myCard1.id(), paddingtonReader.id(), clock);
+        Journey journey = new Journey(start, end);
+        assertTrue(paymentsManager.longJourney(journey));
     }
 
     @Test
     public void customerShortJourney() {
-
-    }*/
+        PaymentsManager paymentsManager = new PaymentsManager(tracker, paymentsSystemInterface);
+        clock.setTime(17, 01);
+        JourneyStart start = new JourneyStart(myCard1.id(), victoriaReader.id(), clock);
+        clock.setTime(17, 20);
+        JourneyEnd end = new JourneyEnd(myCard1.id(), paddingtonReader.id(), clock);
+        Journey journey = new Journey(start, end);
+        assertFalse(paymentsManager.longJourney(journey));
+    }
 
 }

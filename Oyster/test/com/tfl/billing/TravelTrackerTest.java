@@ -12,9 +12,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +26,7 @@ public class TravelTrackerTest {
 
     final OysterCard myCard1 = new OysterCard("42694269-8cf0-11bd-b23e-10b96e4ef00d");
     final OysterCard myCard2 = new OysterCard("12341234-8cf0-11bd-b23e-10b96e4ef00d");
+
     private Customer sean = new Customer("Sean Lee", myCard1);
     private Customer kenneth = new Customer("Kenneth Forbes Lay", myCard2);
 
@@ -56,7 +54,7 @@ public class TravelTrackerTest {
             exactly(1).of(customerDatabaseInterface).isRegisteredId(myCard1.id());
             will(returnValue(true));
         }});
-
         tracker.cardScanned(myCard1.id(), paddingtonReader.id());
     }
+
 }

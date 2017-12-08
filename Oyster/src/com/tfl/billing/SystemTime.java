@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 
 public class SystemTime implements ClockInterface {
-
+    long time;
     @Override
     public long currentTime() { return System.currentTimeMillis(); }
 

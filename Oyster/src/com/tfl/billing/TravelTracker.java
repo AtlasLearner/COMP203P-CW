@@ -3,26 +3,25 @@ package com.tfl.billing;
 import com.oyster.OysterCardReader;
 import com.oyster.ScanListener;
 import com.tfl.external.Customer;
-import com.tfl.external.CustomerDatabase;
 
 import java.util.*;
 
 public class TravelTracker implements ScanListener {
 
     private CustomerDatabaseInterface customerDatabaseInterface;
-    private ClockInterface clock;
+    private ClockInterface time;
 
     private final List<JourneyEvent> eventLog = new ArrayList<JourneyEvent>();
     private final Set<UUID> currentlyTravelling = new HashSet<UUID>();
 
     public TravelTracker() {
         this.customerDatabaseInterface = CustomerDatabaseAdapter.getInstance();
-        this.clock = new SystemTime();
+        this.time = new SystemTime();
     }
 
-    public TravelTracker(CustomerDatabaseInterface customerDatabaseInterface, ClockInterface clock) {
+    public TravelTracker(CustomerDatabaseInterface customerDatabaseInterface, ClockInterface time) {
         this.customerDatabaseInterface = customerDatabaseInterface;
-        this.clock = clock;
+        this.time = time;
     }
 
     public List<JourneyEvent> getEventLog() {
@@ -65,12 +64,12 @@ public class TravelTracker implements ScanListener {
     @Override
     public void cardScanned(UUID cardId, UUID readerId) {
         if (currentlyTravelling.contains(cardId)) {
-            eventLog.add(new JourneyEnd(cardId, readerId, clock));
+            eventLog.add(new JourneyEnd(cardId, readerId, time));
             currentlyTravelling.remove(cardId);
         } else {
-            if (CustomerDatabase.getInstance().isRegisteredId(cardId)) {
+            if (customerDatabaseInterface.isRegisteredId(cardId)) {
                 currentlyTravelling.add(cardId);
-                eventLog.add(new JourneyStart(cardId, readerId, clock));
+                eventLog.add(new JourneyStart(cardId, readerId, time));
             } else {
                 throw new UnknownOysterCardException(cardId);
             }

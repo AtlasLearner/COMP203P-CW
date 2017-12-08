@@ -15,14 +15,11 @@ public class JourneyStartTest {
     private JourneyStart start = new JourneyStart(cardID, readerID, time);
 
     @Test
-    public void CheckcardID() { assertEquals(start.cardId(), cardID);
-    }
+    public void CheckcardID() { assertEquals(start.cardId(), cardID); }
 
     @Test
-    public void CheckreaderID() {
-        assertEquals(start.readerId(), readerID);
-    }
-    
+    public void CheckreaderID() { assertEquals(start.readerId(), readerID); }
+
     @Test
-    public void Checktime() { assertEquals(start.time(), time.currentTime());}
+    public void Checktime() { assertEquals(start.time(), time.currentTime()); }
 }

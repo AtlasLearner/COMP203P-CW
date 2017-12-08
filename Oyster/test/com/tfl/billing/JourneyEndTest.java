@@ -20,7 +20,6 @@ public class JourneyEndTest {
     public void CheckreaderID() { assertEquals(end.readerId(), readerID); }
 
     @Test
-    public void Checktime() { assertEquals(end.time(), time.currentTime());}
-
+    public void Checktime() { assertEquals(end.time(), time.currentTime()); }
 
 }
