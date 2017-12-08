@@ -15,6 +15,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 public class TravelTrackerTest {
     private PaymentsSystemInterface paymentsSystemInterface;
     private CustomerDatabaseInterface customerDatabaseInterface;
@@ -55,6 +57,35 @@ public class TravelTrackerTest {
             will(returnValue(true));
         }});
         tracker.cardScanned(myCard1.id(), paddingtonReader.id());
+    }
+
+    @Test
+    public void getCustomerJourneysTest(){
+        context.checking(new Expectations(){{
+            exactly(1).of(customerDatabaseInterface).isRegisteredId(myCard2.id());
+            will(returnValue(true));
+            exactly(1).of(customerDatabaseInterface).isRegisteredId(myCard1.id());
+            will(returnValue(true));
+        }});
+        tracker.connect(paddingtonReader, victoriaReader, kingsCrossReader);
+        paddingtonReader.touch(myCard2);
+        victoriaReader.touch(myCard2);
+
+        JourneyEvent start = tracker.getEventLog().get(0);
+        JourneyEvent end = tracker.getEventLog().get(1);
+        Journey journeyTest = new Journey(start, end);
+
+        assertEquals(tracker.getCustomerJourneys(kenneth).get(0).originId(),journeyTest.originId());
+        assertEquals(tracker.getCustomerJourneys(kenneth).get(0).destinationId(),journeyTest.destinationId());
+
+        paddingtonReader.touch(myCard1);
+        kingsCrossReader.touch(myCard1);
+
+        Journey journeyTest2 = new Journey(start, end);
+
+        assertEquals(tracker.getCustomerJourneys(sean).get(0).originId() , journeyTest2.originId());
+        assertEquals(tracker.getCustomerJourneys(sean).get(0).startTime(), journeyTest2.startTime());
+        assertEquals(tracker.getCustomerJourneys(sean).get(0).endTime(), journeyTest2.endTime());
     }
 
 }
